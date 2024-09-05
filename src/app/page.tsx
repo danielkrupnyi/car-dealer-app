@@ -3,13 +3,14 @@
 import { Container } from "@/components/Container";
 import { VehicleTypesResponce } from "@/types/types";
 import { years } from "@/utils/utils";
+import clsx from "clsx";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 const HomePage = () => {
   const [data, setData] = useState<VehicleTypesResponce | null>(null);
-  const [carMake, setCarMake] = useState(null);
-  const [modelYear, setModelYear] = useState(null);
+  const [carMakeId, setCarMake] = useState<string>();
+  const [modelYear, setModelYear] = useState<string>();
 
   useEffect(() => {
     const fetchVehicleType = async () => {
@@ -27,6 +28,12 @@ const HomePage = () => {
     fetchVehicleType();
   }, []);
 
+  const handleCarMakeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setCarMake(e.target.value);
+  };
+  const handleModelYearChange = (e: ChangeEvent<HTMLSelectElement>) =>
+    setModelYear(e.target.value);
+
   return (
     <section className="min-h-screen mx-3 my-12">
       <Container>
@@ -37,32 +44,37 @@ const HomePage = () => {
           accusamus ex non laboriosam sed eveniet odio dolor ea, debitis maxime?
         </p>
         <form className="join mt-8">
-          <select className="select select-bordered join-item capitalize">
-            <option disabled selected>
-              vehicle type
-            </option>
-            {data ? (
+          <select
+            value={carMakeId}
+            onChange={handleCarMakeChange}
+            className="select select-bordered join-item capitalize"
+          >
+            <option value="">vehicle type</option>
+            {data &&
               data.Results?.map((el) => (
-                <option value={el.MakeName} key={el.MakeId}>
+                <option value={el.MakeId} key={el.MakeId}>
                   {el.MakeName}
                 </option>
-              ))
-            ) : (
-              <option disabled>vehicle types not found</option>
-            )}
+              ))}
           </select>
 
-          <select className="select select-bordered join-item capitalize">
-            <option disabled selected>
-              model year
-            </option>
+          <select
+            value={modelYear}
+            onChange={handleModelYearChange}
+            className="select select-bordered join-item capitalize"
+          >
+            <option value="">model year</option>
             {years.map((year) => (
               <option key={year}>{year}</option>
             ))}
           </select>
+
           <Link
-            href="/result/makeId/year"
-            className="btn btn-disabled join-item"
+            href={`/result/${carMakeId}/${modelYear}`}
+            className={clsx(
+              "btn join-item",
+              !carMakeId || !modelYear ? "btn-disabled" : ""
+            )}
           >
             Search
           </Link>
