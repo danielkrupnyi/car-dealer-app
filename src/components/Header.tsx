@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Container } from "./Container";
 
 export const Header = () => {
@@ -51,7 +52,15 @@ export const Header = () => {
                 </li>
               </ul>
             </div>
-            <a className="btn btn-ghost text-xl">CarDealerApp</a>
+            <Link href="/" className="btn btn-ghost text-xl">
+              <Image
+                src="/logo.png"
+                alt="CarDealerApp Logo"
+                width={40}
+                height={40}
+              />
+              CarDealerApp
+            </Link>
           </div>
           <div className="navbar-center hidden lg:flex">
             <ul className="menu menu-horizontal px-1">
