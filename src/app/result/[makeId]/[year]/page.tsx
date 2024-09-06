@@ -1,16 +1,25 @@
-import { ModelsResponce, VehicleTypesResponce } from "@/types/types";
+import { ModelsResponce } from "@/interfaces/interfaces";
 import { Container } from "@/components/Container";
-import { FC } from "react";
+import { FC, Suspense } from "react";
+import { Loader } from "@/components/Loader";
+import { ModelsList } from "@/components/ModelsList/ModelsList";
+import { fetchMakes, fetchModels } from "@/actions";
 
 export const generateStaticParams = async () => {
-  const res = await fetch(
-    "https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json"
-  );
-  const data: VehicleTypesResponce = await res.json();
+  try {
+    const data = await fetchMakes();
 
-  return data.Results.map((make) => ({
-    makeId: String(make.MakeId),
-  }));
+    if (!data || data.Results.length === 0) {
+      return [];
+    }
+
+    return data.Results.map((make) => ({
+      makeId: String(make.MakeId),
+    }));
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
 };
 
 const ResultPage: FC<{
@@ -20,32 +29,16 @@ const ResultPage: FC<{
   };
 }> = async ({ params }) => {
   const { makeId, year } = params;
-
-  const fetchModels = async () => {
-    const res = await fetch(
-      `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeIdYear/makeId/${makeId}/modelyear/${year}?format=json`
-    );
-    const data = await res.json();
-    return data;
-  };
-
-  const models: ModelsResponce = await fetchModels();
+  const models: ModelsResponce = await fetchModels(makeId, year);
 
   return (
-    <div className="min-h-screen">
+    <section className="min-h-screen-sized my-12">
       <Container>
-        <div className="grid grid-cols-auto-fill gap-4 my-12">
-          {models &&
-            models?.Results.map((model) => (
-              <div key={model.Model_ID} className="card bg-base-100 shadow-xl">
-                <div className="card-body">
-                  <h2 className="card-title">{`${model.Make_Name} ${model.Model_Name}`}</h2>
-                </div>
-              </div>
-            ))}
-        </div>
+        <Suspense fallback={<Loader />}>
+          <ModelsList models={models} />
+        </Suspense>
       </Container>
-    </div>
+    </section>
   );
 };
 

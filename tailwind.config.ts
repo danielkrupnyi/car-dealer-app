@@ -12,6 +12,12 @@ const config: Config = {
       gridTemplateColumns: {
         "auto-fill": "repeat(auto-fill, minmax(280px, 1fr))",
       },
+      height: {
+        "screen-sized": "calc(100vh - 212px)",
+      },
+      minHeight: {
+        "screen-sized": "calc(100vh - 212px)",
+      },
     },
   },
   plugins: [daisyui],
