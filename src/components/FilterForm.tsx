@@ -4,28 +4,11 @@ import { VehicleTypesResponce } from "@/interfaces/interfaces";
 import { years } from "@/utils/utils";
 import clsx from "clsx";
 import Link from "next/link";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 
-export const FilterForm = () => {
-  const [data, setData] = useState<VehicleTypesResponce | null>(null);
+export const FilterForm: FC<{ makes: VehicleTypesResponce }> = ({ makes }) => {
   const [carMakeId, setCarMake] = useState<string>();
   const [modelYear, setModelYear] = useState<string>();
-
-  useEffect(() => {
-    const fetchVehicleType = async () => {
-      try {
-        const res = await fetch(
-          "https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json"
-        );
-        const data = await res.json();
-        setData(data);
-      } catch (error) {
-        console.error(error);
-        return Promise.reject(error);
-      }
-    };
-    fetchVehicleType();
-  }, []);
 
   const handleCarMakeChange = (e: ChangeEvent<HTMLSelectElement>) =>
     setCarMake(e.target.value);
@@ -39,11 +22,11 @@ export const FilterForm = () => {
         onChange={handleCarMakeChange}
         className={clsx(
           "select select-bordered join-item capitalize",
-          !data || !data?.Results ? "select-disabled" : ""
+          !makes || !makes?.Results ? "select-disabled" : ""
         )}
       >
         <option value="">vehicle type</option>
-        {data?.Results?.map((el) => (
+        {makes?.Results?.map((el) => (
           <option value={el.MakeId} key={el.MakeId}>
             {el.MakeName}
           </option>
@@ -55,7 +38,7 @@ export const FilterForm = () => {
         onChange={handleModelYearChange}
         className={clsx(
           "select select-bordered join-item capitalize",
-          !data || !data?.Results ? "select-disabled" : ""
+          !makes || !makes?.Results ? "select-disabled" : ""
         )}
       >
         <option value="">model year</option>

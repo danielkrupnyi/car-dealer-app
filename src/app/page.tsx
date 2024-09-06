@@ -3,8 +3,11 @@ import Image from "next/image";
 import { Container } from "@/components/Container";
 import { Loader } from "@/components/Loader";
 import { FilterForm } from "@/components/FilterForm";
+import { fetchMakes } from "@/actions";
 
-const HomePage = () => {
+const HomePage = async () => {
+  const data = await fetchMakes();
+
   return (
     <section className="min-h-screen-sized md:h-screen-sized relative mx-3 my-12">
       <Container>
@@ -18,7 +21,7 @@ const HomePage = () => {
               dolor ea, debitis maxime?
             </p>
             <Suspense fallback={<Loader />}>
-              <FilterForm />
+              <FilterForm makes={data} />
             </Suspense>
           </div>
           <div className="lg:flex-1 relative h-52 md:h-60 lg:h-96 w-full">
